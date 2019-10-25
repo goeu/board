@@ -17,7 +17,8 @@ public enum SampleService {
 		list.add(str);
 	}
 	
-	public List<String> getList() {
+	public List<String> getList(){
+		
 		return list;
 	}
 }

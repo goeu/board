@@ -2,15 +2,39 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-  
-  
-  <mapper namespace="org.zerock.dao.BoardMapper">
-  	<select id="selectOne" resultType="org.zerock.domain.BoardVO">
-  		select * from tbl_board where bno = #{bno}
-  	</select>
-  	
-  	<insert id="insert">
-  	insert into tbl_board(bno, title, content, writer)
-  	values(seq_board.nextval, #{title}, #{content}, #{writer})
-  	</insert>
-  </mapper>
+ 
+ <mapper namespace="org.zerock.dao.BoardMapper">
+ 	<insert id="insert">
+ 		insert into tbl_board(bno,title,content,writer)
+ 		values(seq_board.nextval, #{title},#{content}, #{writer} ) <!-- getWrite 동작 -->  
+ 	</insert>
+ 	
+ 	<insert id="insertFile">
+ 	insert into tbl_board_attach (board_no, fname)
+	values (seq_board.currval, #{fname})
+ 	</insert>
+ 	
+ 	<select id="select" resultType="org.zerock.domain.BoardVO">
+ 		select * from tbl_board where bno = #{bno}
+ 	</select> 
+ 	<select id="selectList" resultType="org.zerock.domain.BoardVO">
+	<![CDATA[
+	select 
+	 bno,title,content,writer,regdate, updatedate 
+	from 
+	(
+	select 
+	 /*+INDEX_DESC(tbl_board pk_board )*/
+	 rownum rn, bno,title,content,writer,regdate, updatedate 
+	from tbl_board
+	where rownum <= (#{page} * #{amount})
+	and bno > 0
+	order by bno desc
+	)
+	where rn > (#{page}-1) * #{amount}
+	]]>
+</select> 
+ <select id="getCount" resultType="int">
+ 	select count(bno) from tbl_board
+ </select>
+ </mapper>  

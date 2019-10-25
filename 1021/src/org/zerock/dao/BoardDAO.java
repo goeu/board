@@ -2,10 +2,8 @@ package org.zerock.dao;
 
 import org.zerock.domain.BoardVO;
 
-public interface BoardDAO {
+public interface BoardDAO extends CrudDAO<BoardVO, Long>{
+
 	
-	// select
-	public BoardVO selectOne(Long bno);
-	
-	public boolean insert(BoardVO vo);
+	public int getCount();
 }

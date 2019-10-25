@@ -7,7 +7,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 public enum MyBatisLoader {
-	
+
 	INSTANCE;
 	
 	private SqlSessionFactory factory;
@@ -16,17 +16,15 @@ public enum MyBatisLoader {
 		return this.factory;
 	}
 	
-	private MyBatisLoader() {
+	MyBatisLoader(){
 		try {
-		String resource = "mybatis-config.xml";
-		InputStream inputStream = Resources.getResourceAsStream(resource);
-		factory = new SqlSessionFactoryBuilder().build(inputStream);
-			
-		System.out.println(factory);
-		} catch (Exception e1) {
-			e1.printStackTrace();
+			String resource = "mybatis-config.xml";
+			InputStream inputStream = Resources.getResourceAsStream(resource);
+			factory = new SqlSessionFactoryBuilder().build(inputStream);
+		
+		}catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
-	
 	
 }
