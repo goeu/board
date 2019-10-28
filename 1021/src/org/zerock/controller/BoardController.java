@@ -1,4 +1,3 @@
-
 package org.zerock.controller;
 
 import java.io.File;
@@ -7,6 +6,7 @@ import java.util.Collection;
 
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -53,6 +53,7 @@ public class BoardController extends BasicController {
 		System.out.println("list...............");
 		return "/board/list";
 	}
+	
 	@RequestMapping(value = "/board/register", type = "POST")
 	public String addPost(HttpServletRequest req,
 			HttpServletResponse res)throws Exception {
@@ -121,14 +122,60 @@ public class BoardController extends BasicController {
 		System.out.println(delete);
 		return "redirect:/list";
 	}
+	
 	@RequestMapping(value="/board/read", type="GET")
 	public String Read(HttpServletRequest req, HttpServletResponse res) {
+		
+		//tagetCookie에 
+		Cookie targetCookie = checkCookieExist(req, "RecentView");
+		boolean existCookie = targetCookie != null;
+		
+		boolean already = checkCookieValue(targetCookie, req.getParameter("bno"),"%");
+		
+		System.out.println("targetCookie" +  targetCookie);
+		System.out.println("already : "+already);
+		
+		
+		//Cookie targetCookie = checkCookieExist (req,쿠키이름)
+		//existCookie = targetCookie == null;
+		//already = checkCookieValue(bno,'%');
+		
+		//조회수 쿠키를 확인한다. -RecentViewCookie =>existCookies
+		//값을 가져오고 %로 분리
+		//해당 bno값이 있는지 확인 - already
+		
+		//if already가 false라면 
+		//조회시에 update하고 가져온다.
+		// else
 		long bno = Long.parseLong(req.getParameter("bno"));
+		
+		if(already==false) {
+			dao.updateViewCnt(bno);
+		}
 		req.setAttribute("board", dao.selectOne(bno));
+		//exisCookiew  false
+		//RecentViewCookie 생성하고 response추가
+		if(existCookie == false) {
+			Cookie ck = new Cookie("RecentView", bno+"%");
+			ck.setMaxAge(60*60*24); //a day
+			ck.setPath("/board");
+			res.addCookie(ck);
+			System.out.println("신규쿠키발행");
+		}else {//있음
+			String value = targetCookie.getValue();
+			
+			value += bno+"%";
+			targetCookie.setValue(value);
+			
+			res.addCookie(targetCookie);
+		}
+		
+		
 		
 		return "/board/read";
 	}
 
+	
 	
 
 }

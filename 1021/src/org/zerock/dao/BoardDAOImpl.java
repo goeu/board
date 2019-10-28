@@ -120,5 +120,20 @@ public class BoardDAOImpl implements BoardDAO {
 		}
 		return result;
 	}
+	@Override
+	public boolean updateViewCnt(Long bno) {
+		int result = 0;
+
+		try (SqlSession session = factory.openSession()) {
+			
+			result = session.selectOne("org.zerock.dao.BoardMapper.updateView", bno);
+			System.out.println(result);
+			  
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result == 1;
+		
+	}
 
 }
